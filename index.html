@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>⚽ Central de Esportes: Futebol Ao Vivo</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0f1a 0%, #0c1222 100%);
+            font-family: 'Segoe UI', system-ui, 'Poppins', sans-serif;
+            padding: 20px;
+            min-height: 100vh;
+            color: #fff;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            color: #aaa;
+            margin-top: 8px;
+        }
+
+        /* Grid de canais */
+        .channels-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .channel-card {
+            background: rgba(15, 20, 35, 0.8);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(255,215,0,0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .channel-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+            border-color: rgba(255,215,0,0.6);
+        }
+
+        .channel-header {
+            background: #1a1f2e;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #ffcc33;
+        }
+
+        .channel-name {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .channel-badge {
+            background: #ffcc33;
+            color: #111;
+            padding: 4px 10px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: bold;
+        }
+
+        .player-container {
+            position: relative;
+            width: 100%;
+            padding-bottom: 56.25%; /* 16:9 Aspect Ratio */
+            background: #000;
+        }
+
+        .player-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* Guias (Tabs) */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background: rgba(30, 35, 55, 0.8);
+            border: none;
+            padding: 10px 24px;
+            border-radius: 40px;
+            color: #ddd;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            backdrop-filter: blur(4px);
+        }
+
+        .tab-btn.active {
+            background: #ffcc33;
+            color: #111;
+            box-shadow: 0 0 10px rgba(255,204,51,0.5);
+        }
+
+        .tab-pane {
+            display: none;
+            background: rgba(0,0,0,0.4);
+            border-radius: 20px;
+            padding: 20px;
+            backdrop-filter: blur(4px);
+        }
+
+        .tab-pane.active {
+            display: block;
+        }
+
+        /* Tabela de jogos */
+        .games-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+
+        .games-table th, .games-table td {
+            padding: 12px 10px;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .games-table th {
+            color: #ffcc33;
+            font-weight: bold;
+        }
+
+        .channel-tag {
+            background: #2c3e50;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            display: inline-block;
+        }
+
+        /* Links úteis */
+        .external-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+        }
+
+        .ext-link {
+            background: #1a1f2e;
+            padding: 12px 24px;
+            border-radius: 50px;
+            text-decoration: none;
+            color: #fff;
+            font-weight: bold;
+            transition: 0.2s;
+            border: 1px solid #ffcc3344;
+        }
+
+        .ext-link:hover {
+            background: #ffcc33;
+            color: #111;
+            border-color: #ffcc33;
+        }
+
+        .footer {
+            text-align: center;
+            margin-top: 40px;
+            font-size: 0.75rem;
+            color: #777;
+        }
+
+        @media (max-width: 700px) {
+            .channel-header { padding: 8px 15px; }
+            .channel-name { font-size: 1rem; }
+            .games-table th, .games-table td { padding: 8px 5px; font-size: 0.75rem; }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>⚽ CENTRAL DE ESPORTES</h1>
+        <p>Assista futebol ao vivo com as melhores fontes gratuitas e oficiais</p>
+    </div>
+
+    <!-- Grid de canais principais -->
+    <div class="channels-grid">
+        <!-- Canal CazéTV -->
+        <div class="channel-card">
+            <div class="channel-header">
+                <span class="channel-name">📺 CazéTV</span>
+                <span class="channel-badge">AO VIVO</span>
+            </div>
+            <div class="player-container">
+                <iframe src="https://www.youtube.com/embed/live_stream?channel=UCLCzC0wv2Y1Vh-8mZz4Y5Zg" 
+                        allowfullscreen 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+                </iframe>
+            </div>
+        </div>
+
+        <!-- Canal GE TV (Globo Esporte) -->
+        <div class="channel-card">
+            <div class="channel-header">
+                <span class="channel-name">📡 GE TV</span>
+                <span class="channel-badge">AO VIVO</span>
+            </div>
+            <div class="player-container">
+                <iframe src="https://www.youtube.com/embed/live_stream?channel=UCs7FZn4tLqH7Z9fXvQ5g8tA" 
+                        allowfullscreen 
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture">
+                </iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sistema de abas (mais opções) -->
+    <div class="tabs">
+        <button class="tab-btn active" data-tab="tab1">🏟️ Jogos de Hoje</button>
+        <button class="tab-btn" data-tab="tab2">📺 Multicanais + Futemax</button>
+        <button class="tab-btn" data-tab="tab3">🌐 Streams Alternativos</button>
+    </div>
+
+    <div class="tab-pane active" id="tab1">
+        <h3 style="margin-bottom: 15px;">📅 Agenda de Transmissões (Horário de Brasília)</h3>
+        <table class="games-table">
+            <thead>
+                <tr><th>Horário</th><th>Jogo</th><th>Onde Assistir</th></tr>
+            </thead>
+            <tbody>
+                <tr><td>16:00</td><td>Flamengo x Palmeiras</td><td><span class="channel-tag">CazéTV / Globo</span></td></tr>
+                <tr><td>18:30</td><td>Corinthians x São Paulo</td><td><span class="channel-tag">GE TV / Record</span></td></tr>
+                <tr><td>21:00</td><td>Atlético-MG x Cruzeiro</td><td><span class="channel-tag">Premiere / Futemax</span></td></tr>
+                <tr><td>21:30</td><td>Internacional x Grêmio</td><td><span class="channel-tag">SporTV / Multicanais</span></td></tr>
+            </tbody>
+        </table>
+        <p style="font-size: 0.8rem; margin-top: 15px; color: #aaa;">* A grade é atualizada diariamente com base nos jogos oficiais.</p>
+    </div>
+
+    <div class="tab-pane" id="tab2">
+        <h3 style="margin-bottom: 15px;">🔗 Acesso Rápido aos Principais Portais</h3>
+        <div style="display: flex; flex-direction: column; gap: 15px;">
+            <div style="background: #111922; padding: 15px; border-radius: 16px;">
+                <h4>📱 Multicanais</h4>
+                <p>Acesse o site oficial para assistir canais de TV e esportes ao vivo.</p>
+                <a href="https://multicanais.global/" target="_blank" class="ext-link" style="display: inline-block; margin-top: 10px;">Acessar Multicanais →</a>
+            </div>
+            <div style="background: #111922; padding: 15px; border-radius: 16px;">
+                <h4>⚽ Futemax</h4>
+                <p>Portal focado em transmissões gratuitas de futebol e outros esportes.</p>
+                <a href="https://futemax.trade/" target="_blank" class="ext-link" style="display: inline-block; margin-top: 10px;">Acessar Futemax →</a>
+            </div>
+        </div>
+        <p style="font-size: 0.75rem; margin-top: 20px; color: #ffaa44;">⚠️ Dica: Os endereços podem mudar com frequência. Caso os links estejam fora do ar, pesquise por "novo link Futemax 2026" no Google.</p>
+    </div>
+
+    <div class="tab-pane" id="tab3">
+        <h3 style="margin-bottom: 15px;">📺 Transmissões Oficiais e Gratuitas</h3>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 12px;">
+            <li>✅ <strong>LiveMode TV</strong> – Canal no YouTube com jogos do Mundial e campeonatos europeus.</li>
+            <li>✅ <strong>CazéTV</strong> – Transmite Brasileirão, Copa do Brasil e eventos exclusivos.</li>
+            <li>✅ <strong>GE TV</strong> – Novo canal da Globo com jogos ao vivo e conteúdo esportivo 24h.</li>
+            <li>✅ <strong>FIFA+</strong> – Streaming gratuito de diversas ligas e seleções (disponível via DAZN).</li>
+        </ul>
+        <div class="external-links" style="margin-top: 25px;">
+            <a href="https://www.youtube.com/@CazeTV" target="_blank" class="ext-link">📺 CazéTV no YouTube</a>
+            <a href="https://www.youtube.com/@getv" target="_blank" class="ext-link">📡 GE TV no YouTube</a>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>⚠️ Aviso: Este site é um agregador de fontes públicas. Não armazenamos nem transmitimos nenhum conteúdo. Respeite os direitos autorais e utilize apenas streams oficiais sempre que possível.</p>
+        <p style="margin-top: 8px;">⚡ Desenvolvido para facilitar o acesso ao esporte — 2026</p>
+    </div>
+</div>
+
+<script>
+    // Sistema de abas
+    const tabs = document.querySelectorAll('.tab-btn');
+    const panes = document.querySelectorAll('.tab-pane');
+
+    tabs.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tabId = btn.getAttribute('data-tab');
+            tabs.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            panes.forEach(pane => pane.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+        });
+    });
+
+    // Atualiza o título da página com horário
+    function updateTimeTitle() {
+        const now = new Date();
+        const hours = now.getHours().toString().padStart(2,'0');
+        const minutes = now.getMinutes().toString().padStart(2,'0');
+        document.title = `⚽ Futebol Ao Vivo - ${hours}:${minutes}`;
+    }
+    setInterval(updateTimeTitle, 60000);
+    updateTimeTitle();
+</script>
+</body>
+</html>
